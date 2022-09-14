@@ -229,6 +229,10 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+
+        profile {
+            initWith debug
+        }
     }
 
     // applicationVariants are e.g. debug, release
@@ -245,6 +249,15 @@ android {
             }
 
         }
+    }
+}
+
+repositories {
+    maven {
+        url "./src/main/mpp_sdk/repo"
+    }
+    maven {
+        url "https://storage.googleapis.com/download.flutter.io"
     }
 }
 
@@ -277,6 +290,10 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    debugImplementation 'com.ascra.mppuisdk:flutter_debug:1.0'
+    profileImplementation 'com.ascra.mppuisdk:flutter_profile:1.0'
+    releaseImplementation 'com.ascra.mppuisdk:flutter_release:1.0'
 }
 
 if (isNewArchitectureEnabled()) {

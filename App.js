@@ -1,117 +1,84 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
+import axios from 'axios';
 import React from 'react';
-import type {Node} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
+  TextInput,
   View,
+  NativeModules,
+  Button,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-const App: () => Node = () => {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [number, onChangeNumber] = React.useState(null);
+
+  const onButtonPress = () => {
+    const headers = {
+      'x-client-id': 'bbmclp-clidecimal-gtw4rt67yuop',
+      'x-app-identifier': 'MPP',
+      'x-api-key': 'c7d334z99-99af-0e69-c961-1994s2sd786y',
+      'x-organization-id': 'CONSUMER002',
+      'Content-Type': 'application/json',
+    };
+    axios
+      .post(
+        'https://mpp-client-uat.moneyone.in/mpp/consent',
+        {
+          productID: '4',
+          partyIdentifierType: 'MOBILE',
+          partyIdentifierValue: number,
+          accountID: '123',
+        },
+        {headers: headers},
+      )
+      .then(response => {
+        NativeModules.MPP.initialiseMPP({
+          url: 'https://mpp-api-uat.moneyone.in',
+          mobileNumber: number,
+          consentHandle: response.data.data.consent_handle,
+          clientId: '685fae51-4eff-4a52-847d-1ec9d82133b9',
+          appIdentifier: 'MPP',
+          apiKey: 'aH2nO3jN6iH6gD7nV2nX3eD8jD7bG5vM0rA6mY3kB2wT0rN4gL',
+          organisationId: 'CONSUMER002',
+          ssoTimeStamp: '',
+        });
+      })
+      .catch();
+  };
+
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView style={{backgroundStyle}}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+      <View>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeNumber}
+          value={number}
+          placeholder="Enter Number"
+          keyboardType="numeric"
+          maxLength={10}
+        />
+        <Button title="Initialise" onPress={onButtonPress} />
+      </View>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const styles = StyleSheet.create({});
 
 export default App;
